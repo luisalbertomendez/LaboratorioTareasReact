@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { TaskListProvider } from './TaskListContext';
+import TaskForm from './TaskForm';
+import TaskList from './TaskList';
 
-function App() {
+const App = ({ setInitialTasks }) => {
+  useEffect(() => {
+    const tasksFromLocalStorage = JSON.parse(localStorage.getItem('tasks'));
+    if (tasksFromLocalStorage) {
+      setInitialTasks(tasksFromLocalStorage);
+    }
+  }, [setInitialTasks]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <TaskListProvider>
+        <TaskForm />
+        <TaskList />
+      </TaskListProvider>
     </div>
   );
-}
+};
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  setInitialTasks: (tasks) => dispatch({ type: 'SET_INITIAL_TASKS', payload: { tasks } }),
+});
+
+export default connect(null, mapDispatchToProps)(App);
